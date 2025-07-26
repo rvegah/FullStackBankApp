@@ -1,0 +1,40 @@
+services:
+  # SQL Server Database
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: bankapi-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=BankAPI2025!
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - bankapi-network
+
+  # Bank API
+  bankapi:
+    build:
+      context: ./BankAPI
+      dockerfile: Dockerfile
+    container_name: bankapi-backend
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=BankDb;User Id=sa;Password=BankAPI2025!;TrustServerCertificate=True;Encrypt=False;
+    ports:
+      - "5089:8080"
+    depends_on:
+      - sqlserver
+    networks:
+      - bankapi-network
+    restart: unless-stopped
+
+volumes:
+  sqlserver_data:
+
+networks:
+  bankapi-network:
+    driver: bridge

@@ -1,0 +1,857 @@
+{
+	"info": {
+		"_postman_id": "12345678-1234-1234-1234-123456789012",
+		"name": "BankAPI - Full Stack Exercise",
+		"description": "Colección completa para probar la API del ejercicio técnico Full-Stack.\n\nIncluye endpoints para:\n- Clientes (CRUD)\n- Cuentas (CRUD)\n- Movimientos (CRUD + Lógica de negocio)\n- Reportes\n\nBase URL: http://localhost:5089",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "CLIENTES",
+			"item": [
+				{
+					"name": "Obtener todos los clientes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Cliente",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cliente"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener cliente por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Cliente/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cliente",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear cliente - José Lema",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"José Lema\",\n  \"genero\": \"M\",\n  \"edad\": 35,\n  \"identificacion\": \"12345678\",\n  \"direccion\": \"Otavalo sn y principal\",\n  \"telefono\": \"098254785\",\n  \"contrasena\": \"1234\",\n  \"estado\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Cliente",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cliente"
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear cliente - Marianela Montalvo",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Marianela Montalvo\",\n  \"genero\": \"F\",\n  \"edad\": 28,\n  \"identificacion\": \"87654321\",\n  \"direccion\": \"Amazonas y NNUU\",\n  \"telefono\": \"097548965\",\n  \"contrasena\": \"5678\",\n  \"estado\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Cliente",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cliente"
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear cliente - Juan Osorio",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Juan Osorio\",\n  \"genero\": \"M\",\n  \"edad\": 42,\n  \"identificacion\": \"11223344\",\n  \"direccion\": \"13 junio y Equinoccial\",\n  \"telefono\": \"098874587\",\n  \"contrasena\": \"1245\",\n  \"estado\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Cliente",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cliente"
+							]
+						}
+					}
+				},
+				{
+					"name": "Actualizar cliente",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"José Lema Actualizado\",\n  \"genero\": \"M\",\n  \"edad\": 36,\n  \"identificacion\": \"12345678\",\n  \"direccion\": \"Otavalo sn y principal - Actualizado\",\n  \"telefono\": \"098254785\",\n  \"contrasena\": \"1234\",\n  \"estado\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Cliente/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cliente",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar cliente",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Cliente/999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cliente",
+								"999"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "CUENTAS",
+			"item": [
+				{
+					"name": "Obtener todas las cuentas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Cuenta",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cuenta"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener cuenta por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Cuenta/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cuenta",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener cuentas por cliente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Cuenta/cliente/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cuenta",
+								"cliente",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear cuenta - Ahorro José",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"numeroCuenta\": \"478758\",\n  \"tipoCuenta\": \"Ahorro\",\n  \"saldoInicial\": 2000,\n  \"estado\": true,\n  \"clienteId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Cuenta",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cuenta"
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear cuenta - Corriente Marianela",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"numeroCuenta\": \"225487\",\n  \"tipoCuenta\": \"Corriente\",\n  \"saldoInicial\": 100,\n  \"estado\": true,\n  \"clienteId\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Cuenta",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cuenta"
+							]
+						}
+					}
+				},
+				{
+					"name": "Crear cuenta - Ahorro Juan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"numeroCuenta\": \"495878\",\n  \"tipoCuenta\": \"Ahorro\",\n  \"saldoInicial\": 0,\n  \"estado\": true,\n  \"clienteId\": 3\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Cuenta",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cuenta"
+							]
+						}
+					}
+				},
+				{
+					"name": "Actualizar cuenta",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"numeroCuenta\": \"478758\",\n  \"tipoCuenta\": \"Ahorro\",\n  \"saldoInicial\": 2500,\n  \"estado\": true,\n  \"clienteId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Cuenta/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cuenta",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar cuenta",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Cuenta/999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cuenta",
+								"999"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "MOVIMIENTOS",
+			"item": [
+				{
+					"name": "Obtener todos los movimientos",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Movimiento",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Movimiento"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener movimiento por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Movimiento/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Movimiento",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener movimientos por cuenta",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Movimiento/cuenta/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Movimiento",
+								"cuenta",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Obtener movimientos por cliente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Movimiento/cliente/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Movimiento",
+								"cliente",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Depósito exitoso (Crédito)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tipoMovimiento\": \"Crédito\",\n  \"valor\": 600,\n  \"cuentaId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Movimiento",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Movimiento"
+							]
+						}
+					}
+				},
+				{
+					"name": "Retiro exitoso (Débito)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tipoMovimiento\": \"Débito\",\n  \"valor\": 575,\n  \"cuentaId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Movimiento",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Movimiento"
+							]
+						}
+					}
+				},
+				{
+					"name": "ERROR - Saldo no disponible",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tipoMovimiento\": \"Débito\",\n  \"valor\": 5000,\n  \"cuentaId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Movimiento",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Movimiento"
+							]
+						}
+					}
+				},
+				{
+					"name": "ERROR - Cupo diario excedido",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tipoMovimiento\": \"Débito\",\n  \"valor\": 1500,\n  \"cuentaId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Movimiento",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Movimiento"
+							]
+						}
+					}
+				},
+				{
+					"name": "Actualizar movimiento",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tipoMovimiento\": \"Crédito\",\n  \"valor\": 500,\n  \"cuentaId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Movimiento/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Movimiento",
+								"1"
+							]
+						}
+					}
+				},
+				{
+					"name": "Eliminar movimiento",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Movimiento/999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Movimiento",
+								"999"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "REPORTES",
+			"item": [
+				{
+					"name": "Reporte por rango de fechas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Movimiento/reportes?fechaInicio=2025-07-25&fechaFin=2025-07-26",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Movimiento",
+								"reportes"
+							],
+							"query": [
+								{
+									"key": "fechaInicio",
+									"value": "2025-07-25"
+								},
+								{
+									"key": "fechaFin",
+									"value": "2025-07-26"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Reporte por cliente y fechas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Movimiento/reportes?fechaInicio=2025-07-25&fechaFin=2025-07-26&clienteId=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Movimiento",
+								"reportes"
+							],
+							"query": [
+								{
+									"key": "fechaInicio",
+									"value": "2025-07-25"
+								},
+								{
+									"key": "fechaFin",
+									"value": "2025-07-26"
+								},
+								{
+									"key": "clienteId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Estado de cuenta - José Lema",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Movimiento/reportes?fechaInicio=2025-07-01&fechaFin=2025-07-31&clienteId=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Movimiento",
+								"reportes"
+							],
+							"query": [
+								{
+									"key": "fechaInicio",
+									"value": "2025-07-01"
+								},
+								{
+									"key": "fechaFin",
+									"value": "2025-07-31"
+								},
+								{
+									"key": "clienteId",
+									"value": "1"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Estado de cuenta - Marianela Montalvo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Movimiento/reportes?fechaInicio=2025-07-01&fechaFin=2025-07-31&clienteId=2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Movimiento",
+								"reportes"
+							],
+							"query": [
+								{
+									"key": "fechaInicio",
+									"value": "2025-07-01"
+								},
+								{
+									"key": "fechaFin",
+									"value": "2025-07-31"
+								},
+								{
+									"key": "clienteId",
+									"value": "2"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "VALIDACIONES",
+			"item": [
+				{
+					"name": "ERROR - Cliente inválido (validaciones)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"A\",\n  \"genero\": \"X\",\n  \"edad\": 10,\n  \"identificacion\": \"123\",\n  \"direccion\": \"Casa\",\n  \"telefono\": \"123\",\n  \"contrasena\": \"1\",\n  \"estado\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Cliente",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cliente"
+							]
+						}
+					}
+				},
+				{
+					"name": "ERROR - Cuenta inválida (validaciones)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"numeroCuenta\": \"123\",\n  \"tipoCuenta\": \"Invalida\",\n  \"saldoInicial\": -100,\n  \"estado\": true,\n  \"clienteId\": 0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Cuenta",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cuenta"
+							]
+						}
+					}
+				},
+				{
+					"name": "ERROR - Movimiento inválido (validaciones)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tipoMovimiento\": \"Invalido\",\n  \"valor\": -100,\n  \"cuentaId\": 0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/Movimiento",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Movimiento"
+							]
+						}
+					}
+				},
+				{
+					"name": "ERROR - Cliente no existe",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Cliente/999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cliente",
+								"999"
+							]
+						}
+					}
+				},
+				{
+					"name": "ERROR - Cuenta no existe",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/Cuenta/999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"Cuenta",
+								"999"
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5089",
+			"type": "string"
+		}
+	]
+}
