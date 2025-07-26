@@ -92,11 +92,11 @@ GO
 -- =============================================
 -- 1. INSERTAR CLIENTES (según casos de uso del ejercicio)
 -- =============================================
-INSERT INTO Clientes (Nombre, Genero, Edad, Identificacion, Direccion, Telefono, Contrasena, Estado)
+INSERT INTO Clientes (PersonaId, Nombre, Genero, Edad, Identificacion, Direccion, Telefono, Contrasena, Estado)
 VALUES 
-    ('José Lema', 'M', 35, '12345678', 'Otavalo sn y principal', '098254785', '1234', 1),
-    ('Marianela Montalvo', 'F', 28, '87654321', 'Amazonas y NNUU', '097548965', '5678', 1),
-    ('Juan Osorio', 'M', 42, '11223344', '13 junio y Equinoccial', '098874587', '1245', 1);
+    (1, 'José Lema', 'M', 35, '12345678', 'Otavalo sn y principal', '098254785', '1234', 1),
+    (2, 'Marianela Montalvo', 'F', 28, '87654321', 'Amazonas y NNUU', '097548965', '5678', 1),
+    (3, 'Juan Osorio', 'M', 42, '11223344', '13 junio y Equinoccial', '098874587', '1245', 1);
 GO
 
 -- =============================================
