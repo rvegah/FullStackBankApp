@@ -83,10 +83,13 @@ DELETE FROM Movimientos;
 DELETE FROM Cuentas;
 DELETE FROM Clientes;
 
--- Reiniciar IDENTITY
-DBCC CHECKIDENT ('Movimientos', RESEED, 0);
-DBCC CHECKIDENT ('Cuentas', RESEED, 0);
-DBCC CHECKIDENT ('Clientes', RESEED, 0);
+-- Reiniciar IDENTITY solo si hay datos
+IF EXISTS (SELECT 1 FROM Movimientos)
+    DBCC CHECKIDENT ('Movimientos', RESEED, 0);
+IF EXISTS (SELECT 1 FROM Cuentas)
+    DBCC CHECKIDENT ('Cuentas', RESEED, 0);
+IF EXISTS (SELECT 1 FROM Clientes)
+    DBCC CHECKIDENT ('Clientes', RESEED, 0);
 GO
 
 -- =============================================
@@ -102,40 +105,42 @@ GO
 -- =============================================
 -- 2. INSERTAR CUENTAS (según casos de uso del ejercicio)
 -- =============================================
+-- NOTA: Usar los ClienteId generados automáticamente (1, 2, 3)
 INSERT INTO Cuentas (NumeroCuenta, TipoCuenta, SaldoInicial, Estado, ClienteId)
 VALUES 
-    -- Cuentas para José Lema
+    -- Cuentas para José Lema (ClienteId = 1)
     ('478758', 'Ahorro', 2000.00, 1, 1),
     ('585545', 'Corriente', 1000.00, 1, 1),
     
-    -- Cuentas para Marianela Montalvo
+    -- Cuentas para Marianela Montalvo (ClienteId = 2)
     ('225487', 'Corriente', 100.00, 1, 2),
     ('496825', 'Ahorro', 540.00, 1, 2),
     
-    -- Cuenta para Juan Osorio
+    -- Cuenta para Juan Osorio (ClienteId = 3)
     ('495878', 'Ahorro', 0.00, 1, 3);
 GO
 
 -- =============================================
 -- 3. INSERTAR MOVIMIENTOS (según casos de uso del ejercicio)
 -- =============================================
+-- NOTA: Usar los CuentaId generados automáticamente (1, 2, 3, 4, 5)
 
--- Movimientos para José Lema - Cuenta 478758 (Ahorro)
+-- Movimientos para José Lema - Cuenta 478758 (CuentaId = 1)
 INSERT INTO Movimientos (Fecha, TipoMovimiento, Valor, Saldo, CuentaId)
 VALUES 
     ('2025-07-25 10:00:00', 'Débito', -575.00, 1425.00, 1); -- Retiro de 575
 
--- Movimientos para Marianela Montalvo - Cuenta 225487 (Corriente)  
+-- Movimientos para Marianela Montalvo - Cuenta 225487 (CuentaId = 3)  
 INSERT INTO Movimientos (Fecha, TipoMovimiento, Valor, Saldo, CuentaId)
 VALUES 
     ('2025-07-25 11:00:00', 'Crédito', 600.00, 700.00, 3); -- Depósito de 600
 
--- Movimientos para Juan Osorio - Cuenta 495878 (Ahorro)
+-- Movimientos para Juan Osorio - Cuenta 495878 (CuentaId = 5)
 INSERT INTO Movimientos (Fecha, TipoMovimiento, Valor, Saldo, CuentaId)
 VALUES 
     ('2025-07-25 12:00:00', 'Crédito', 150.00, 150.00, 5); -- Depósito de 150
 
--- Movimientos para Marianela Montalvo - Cuenta 496825 (Ahorro)
+-- Movimientos para Marianela Montalvo - Cuenta 496825 (CuentaId = 4)
 INSERT INTO Movimientos (Fecha, TipoMovimiento, Valor, Saldo, CuentaId)
 VALUES 
     ('2025-07-25 13:00:00', 'Débito', -540.00, 0.00, 4); -- Retiro de 540
