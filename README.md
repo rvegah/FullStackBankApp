@@ -37,6 +37,14 @@ Sistema bancario completo que permite gestionar **clientes**, **cuentas** y **mo
 - **API REST** completamente documentada con Swagger
 - **Pruebas Unitarias** con cobertura de casos críticos
 
+### ✨ Frontend (React)
+- Interfaz moderna y responsiva sin librerías externas
+- Gestión completa de todos los módulos (CRUD)
+- Dashboard con estadísticas en tiempo real
+- Sistema de reportes con múltiples formatos de descarga
+- Validaciones en tiempo real con feedback visual
+- Arquitectura modular y escalable
+
 ## ⚡ Características Principales
 
 ### 🔒 Validaciones de Negocio
@@ -66,6 +74,12 @@ Sistema bancario completo que permite gestionar **clientes**, **cuentas** y **mo
 - **Swagger/OpenAPI** - Documentación
 - **xUnit + Moq** - Pruebas unitarias
 
+### Frontend
+- **React 18.0** - Framework de UI
+- **JavaScript ES6+** - Sin TypeScript para simplicidad
+- **CSS3** - Sin frameworks de estilos externos
+- **Fetch API** - Para comunicación con backend
+
 ### DevOps
 - **Docker & Docker Compose** - Containerización
 - **Git** - Control de versiones
@@ -80,6 +94,7 @@ Sistema bancario completo que permite gestionar **clientes**, **cuentas** y **mo
 
 ### Para Ejecución Local
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download)
+- Node.js 18+ y npm
 - [SQL Server](https://www.microsoft.com/sql-server) o SQL Server Express
 - [Visual Studio 2022](https://visualstudio.microsoft.com/) o [VS Code](https://code.visualstudio.com/)
 
