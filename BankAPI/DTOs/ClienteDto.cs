@@ -9,8 +9,6 @@ namespace BankAPI.DTOs
         public required string Identificacion { get; set; }
         public required string Direccion { get; set; }
         public required string Telefono { get; set; }
-        public bool Estado { get; set; }
-        // NO incluimos Contrasena por seguridad
-        // NO incluimos Cuentas para evitar referencias circulares
+        public bool Estado { get; set; }        
     }
 }
