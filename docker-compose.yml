@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   # SQL Server Database
   sqlserver:
@@ -33,21 +31,6 @@ services:
     networks:
       - bankapi-network
     restart: unless-stopped
-
-  # React Frontend
-  frontend:
-    build:
-      context: ./bank-frontend
-      dockerfile: Dockerfile
-    container_name: bankapi-frontend
-    ports:
-      - "3000:3000"
-    depends_on:
-      - bankapi
-    networks:
-      - bankapi-network
-    stdin_open: true
-    tty: true
 
 volumes:
   sqlserver_data:
