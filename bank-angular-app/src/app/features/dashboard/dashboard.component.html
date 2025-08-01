@@ -1,0 +1,93 @@
+<div class="dashboard">
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">Dashboard - Sistema Bancario</h1>
+    <p class="dashboard-subtitle">Resumen general del sistema</p>
+  </div>
+
+  <div class="dashboard-stats">
+    <div class="stat-card">
+      <div class="stat-icon clients-icon">👥</div>
+      <div class="stat-content">
+        <h3 class="stat-number">{{totalClients}}</h3>
+        <p class="stat-label">Clientes Activos</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon accounts-icon">💳</div>
+      <div class="stat-content">
+        <h3 class="stat-number">{{totalAccounts}}</h3>
+        <p class="stat-label">Cuentas Totales</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon movements-icon">💰</div>
+      <div class="stat-content">
+        <h3 class="stat-number">{{totalMovements}}</h3>
+        <p class="stat-label">Transacciones Hoy</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon balance-icon">📊</div>
+      <div class="stat-content">
+        <h3 class="stat-number">${{totalBalance | number:'1.2-2'}}</h3>
+        <p class="stat-label">Balance Total</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    <div class="dashboard-section">
+      <h2 class="section-title">Acciones Rápidas</h2>
+      <div class="quick-actions">
+        <button class="action-btn primary" routerLink="/clients">
+          <i class="btn-icon">👤</i>
+          <span>Gestionar Clientes</span>
+        </button>
+        <button class="action-btn secondary" routerLink="/accounts">
+          <i class="btn-icon">💳</i>
+          <span>Administrar Cuentas</span>
+        </button>
+        <button class="action-btn tertiary" routerLink="/movements">
+          <i class="btn-icon">💸</i>
+          <span>Nuevo Movimiento</span>
+        </button>
+        <button class="action-btn quaternary" routerLink="/reports">
+          <i class="btn-icon">📋</i>
+          <span>Generar Reporte</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="dashboard-section">
+      <h2 class="section-title">Estado del Sistema</h2>
+      <div class="system-status">
+        <div class="status-item">
+          <div class="status-indicator online"></div>
+          <span class="status-label">API Backend</span>
+          <span class="status-value">Conectado</span>
+        </div>
+        <div class="status-item">
+          <div class="status-indicator online"></div>
+          <span class="status-label">Base de Datos</span>
+          <span class="status-value">Operativa</span>
+        </div>
+        <div class="status-item">
+          <div class="status-indicator online"></div>
+          <span class="status-label">Cache Sistema</span>
+          <span class="status-value">Activo</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="refresh-info">
+    <p>Última actualización: {{lastUpdate | date:'short'}}</p>
+    <button class="refresh-btn" (click)="refreshData()" [disabled]="isLoading">
+      <i class="refresh-icon" [class.spinning]="isLoading">🔄</i>
+      Actualizar
+    </button>
+  </div>
+</div>

@@ -1,0 +1,277 @@
+<div class="client-list-container">
+  <!-- Header con título y acciones -->
+  <div class="list-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="title-icon">👥</i>
+        Gestión de Clientes
+      </h1>
+      <p class="page-subtitle">Administra todos los clientes del sistema bancario</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" routerLink="/clients/new">
+        <i class="btn-icon">➕</i>
+        Nuevo Cliente
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros y búsqueda -->
+  <div class="filters-section">
+    <div class="search-container">
+      <div class="search-input-wrapper">
+        <i class="search-icon">🔍</i>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Buscar por nombre, cédula o teléfono..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+        >
+        <button 
+          class="clear-search" 
+          *ngIf="searchTerm" 
+          (click)="clearSearch()"
+          title="Limpiar búsqueda"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <div class="filters-container">
+      <div class="filter-group">
+        <label class="filter-label">Estado:</label>
+        <select 
+          class="filter-select" 
+          [(ngModel)]="statusFilter"
+          (change)="onFilterChange()"
+        >
+          <option value="">Todos</option>
+          <option value="true">Activo</option>
+          <option value="false">Inactivo</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Género:</label>
+        <select 
+          class="filter-select" 
+          [(ngModel)]="genderFilter"
+          (change)="onFilterChange()"
+        >
+          <option value="">Todos</option>
+          <option value="M">Masculino</option>
+          <option value="F">Femenino</option>
+        </select>
+      </div>
+
+      <button class="btn btn-secondary" (click)="resetFilters()">
+        <i class="btn-icon">🔄</i>
+        Limpiar Filtros
+      </button>
+    </div>
+  </div>
+
+  <!-- Estadísticas rápidas -->
+  <div class="stats-row">
+    <div class="stat-item">
+      <span class="stat-number">{{totalClients}}</span>
+      <span class="stat-label">Total Clientes</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">{{activeClients}}</span>
+      <span class="stat-label">Activos</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">{{filteredClients.length}}</span>
+      <span class="stat-label">Mostrando</span>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Cargando clientes...</p>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!loading && filteredClients.length === 0">
+    <div class="empty-icon">👤</div>
+    <h3>No se encontraron clientes</h3>
+    <p *ngIf="searchTerm || statusFilter || genderFilter">
+      Intenta ajustar los filtros de búsqueda
+    </p>
+    <p *ngIf="!searchTerm && !statusFilter && !genderFilter">
+      Comienza agregando tu primer cliente
+    </p>
+    <button class="btn btn-primary" routerLink="/clients/new">
+      Crear Primer Cliente
+    </button>
+  </div>
+
+  <!-- Tabla de clientes -->
+  <div class="table-container" *ngIf="!loading && filteredClients.length > 0">
+    <div class="table-wrapper">
+      <table class="clients-table">
+        <thead>
+          <tr>
+            <th class="sortable" (click)="sort('nombre')">
+              Nombre
+              <i class="sort-icon" [ngClass]="getSortClass('nombre')">⬍</i>
+            </th>
+            <th class="sortable" (click)="sort('identificacion')">
+              Cédula
+              <i class="sort-icon" [ngClass]="getSortClass('identificacion')">⬍</i>
+            </th>
+            <th>Género</th>
+            <th class="sortable" (click)="sort('edad')">
+              Edad
+              <i class="sort-icon" [ngClass]="getSortClass('edad')">⬍</i>
+            </th>
+            <th>Teléfono</th>
+            <th>Estado</th>
+            <th class="actions-header">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let client of paginatedClients; trackBy: trackByClientId" class="client-row">
+            <td class="client-name">
+              <div class="name-cell">
+                <div class="avatar">{{getInitials(client.nombre)}}</div>
+                <div class="name-info">
+                  <span class="name">{{client.nombre}}</span>
+                  <span class="email">{{client.direccion}}</span>
+                </div>
+              </div>
+            </td>
+            <td class="client-id">{{client.identificacion}}</td>
+            <td>
+              <span class="gender-badge" [ngClass]="'gender-' + client.genero.toLowerCase()">
+                {{client.genero === 'M' ? 'Masculino' : 'Femenino'}}
+              </span>
+            </td>
+            <td>{{client.edad}} años</td>
+            <td class="phone">{{client.telefono}}</td>
+            <td>
+              <span class="status-badge" [ngClass]="client.estado ? 'status-active' : 'status-inactive'">
+                {{client.estado ? 'Activo' : 'Inactivo'}}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <div class="action-buttons">
+                <button 
+                  class="btn-action btn-view" 
+                  [routerLink]="['/clients/detail', client.clienteId]"
+                  title="Ver detalles"
+                >
+                  👁️
+                </button>
+                <button 
+                  class="btn-action btn-edit" 
+                  [routerLink]="['/clients/edit', client.clienteId]"
+                  title="Editar cliente"
+                >
+                  ✏️
+                </button>
+                <button 
+                  class="btn-action btn-delete" 
+                  (click)="confirmDelete(client)"
+                  title="Eliminar cliente"
+                >
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    <div class="pagination-container">
+      <div class="pagination-info">
+        Mostrando {{startItem}} - {{endItem}} de {{filteredClients.length}} clientes
+      </div>
+      
+      <div class="pagination-controls">
+        <div class="page-size-selector">
+          <label>Mostrar:</label>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+          <span>por página</span>
+        </div>
+
+        <div class="page-navigation">
+          <button 
+            class="btn btn-sm"
+            [disabled]="currentPage === 1"
+            (click)="goToPage(1)"
+          >
+            ⏮️
+          </button>
+          <button 
+            class="btn btn-sm"
+            [disabled]="currentPage === 1"
+            (click)="goToPage(currentPage - 1)"
+          >
+            ◀️
+          </button>
+          
+          <div class="page-numbers">
+            <button 
+              *ngFor="let page of getVisiblePages()"
+              class="btn btn-sm"
+              [ngClass]="{'active': page === currentPage}"
+              (click)="goToPage(page)"
+            >
+              {{page}}
+            </button>
+          </div>
+          
+          <button 
+            class="btn btn-sm"
+            [disabled]="currentPage === totalPages"
+            (click)="goToPage(currentPage + 1)"
+          >
+            ▶️
+          </button>
+          <button 
+            class="btn btn-sm"
+            [disabled]="currentPage === totalPages"
+            (click)="goToPage(totalPages)"
+          >
+            ⏭️
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="cancelDelete()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Confirmar eliminación</h3>
+      <button class="modal-close" (click)="cancelDelete()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>¿Estás seguro de que deseas eliminar el cliente:</p>
+      <strong>{{clientToDelete?.nombre}}</strong>
+      <p class="warning-text">Esta acción no se puede deshacer.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="cancelDelete()">
+        Cancelar
+      </button>
+      <button class="btn btn-danger" (click)="deleteClient()" [disabled]="deleting">
+        {{deleting ? 'Eliminando...' : 'Eliminar'}}
+      </button>
+    </div>
+  </div>
+</div>

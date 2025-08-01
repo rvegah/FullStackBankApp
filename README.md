@@ -1,11 +1,13 @@
 # 🏦 BankAPI - Sistema Bancario Full-Stack
 
 ![.NET](https://img.shields.io/badge/.NET-9.0-blue)
+![React](https://img.shields.io/badge/React-18.0-61DAFB)
+![Angular](https://img.shields.io/badge/Angular-15.0-DD0031)
 ![Docker](https://img.shields.io/badge/Docker-Enabled-brightgreen)
 ![Tests](https://img.shields.io/badge/Tests-Passing-success)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-> **Ejercicio Técnico Full-Stack** - API REST completa para sistema bancario con .NET Core y React, implementando patrones de diseño, validaciones de negocio y despliegue en Docker.
+> **Ejercicio Técnico Full-Stack** - API REST completa para sistema bancario con .NET Core, React y Angular, implementando patrones de diseño, validaciones de negocio y despliegue en Docker.
 
 ## 📑 Tabla de Contenidos
 
@@ -37,8 +39,9 @@ Sistema bancario completo que permite gestionar **clientes**, **cuentas** y **mo
 - **API REST** completamente documentada con Swagger
 - **Pruebas Unitarias** con cobertura de casos críticos
 
-### ✨ Frontend (React)
-- Interfaz moderna y responsiva sin librerías externas
+### ✨ Frontend Dual
+- **React**: Interfaz moderna y responsiva sin librerías externas
+- **Angular**: Interfaz alternativa con TypeScript y arquitectura modular
 - Gestión completa de todos los módulos (CRUD)
 - Dashboard con estadísticas en tiempo real
 - Sistema de reportes con múltiples formatos de descarga
@@ -74,11 +77,18 @@ Sistema bancario completo que permite gestionar **clientes**, **cuentas** y **mo
 - **Swagger/OpenAPI** - Documentación
 - **xUnit + Moq** - Pruebas unitarias
 
-### Frontend
+### Frontend React
 - **React 18.0** - Framework de UI
 - **JavaScript ES6+** - Sin TypeScript para simplicidad
 - **CSS3** - Sin frameworks de estilos externos
 - **Fetch API** - Para comunicación con backend
+
+### Frontend Angular
+- **Angular 15.0** - Framework de UI
+- **TypeScript** - Tipado estático
+- **Angular CLI** - Herramientas de desarrollo
+- **RxJS** - Programación reactiva
+- **HTML2Canvas + jsPDF** - Generación de reportes
 
 ### DevOps
 - **Docker & Docker Compose** - Containerización
@@ -95,6 +105,7 @@ Sistema bancario completo que permite gestionar **clientes**, **cuentas** y **mo
 ### Para Ejecución Local
 - [.NET 9.0 SDK](https://dotnet.microsoft.com/download)
 - Node.js 18+ y npm
+- [Angular CLI](https://angular.io/cli) (para desarrollo Angular)
 - [SQL Server](https://www.microsoft.com/sql-server) o SQL Server Express
 - [Visual Studio 2022](https://visualstudio.microsoft.com/) o [VS Code](https://code.visualstudio.com/)
 
@@ -125,32 +136,68 @@ dotnet ef database update
 dotnet run
 ```
 
-### 3. Acceder a la Aplicación
+### 3. Ejecutar Frontend (Desarrollo Local)
+
+#### React
+```bash
+cd bank-frontend
+npm install
+npm start
+# Disponible en: http://localhost:3000
+```
+
+#### Angular
+```bash
+cd bank-angular-app
+npm install
+ng serve
+# Disponible en: http://localhost:4200
+```
+
+### 4. Acceder a la Aplicación
 - **API Base**: `http://localhost:5089`
 - **Swagger UI**: `http://localhost:5089/swagger`
-- **Documentación**: `http://localhost:5089/swagger/v1/swagger.json`
+- **React Frontend**: `http://localhost:3000`
+- **Angular Frontend**: `http://localhost:4200`
 
 ## 🐳 Ejecución con Docker
 
-### Método Recomendado
+### Método Recomendado - Todo el Stack
 
 ```bash
-# Ejecutar toda la infraestructura
+# Ejecutar toda la infraestructura (API + React + Angular + SQL Server)
 docker-compose up --build
 
 # En segundo plano
 docker-compose up --build -d
 ```
 
+### Servicios Individuales
+```bash
+# Solo la API y base de datos
+docker-compose up bankapi sqlserver --build
+
+# Solo React
+docker-compose up bank-frontend --build
+
+# Solo Angular
+docker-compose up bank-angular-app --build
+```
+
 ### Servicios Disponibles
 - **API**: `http://localhost:5089`
 - **Swagger**: `http://localhost:5089/swagger`
+- **React Frontend**: `http://localhost:3000`
+- **Angular Frontend**: `http://localhost:4200`
 - **SQL Server**: `localhost:1433`
 
 ### Comandos Útiles
 ```bash
 # Ver logs
 docker-compose logs -f
+
+# Ver logs de un servicio específico
+docker-compose logs -f bank-angular-app
 
 # Detener servicios
 docker-compose down
@@ -259,6 +306,22 @@ FullStackBankApp/
 │   ├── Dockerfile               # Configuración Docker
 │   ├── Program.cs               # Punto de entrada
 │   └── appsettings.json         # Configuración
+├── bank-frontend/               # Frontend React
+│   ├── src/
+│   │   ├── components/
+│   │   ├── services/
+│   │   └── App.js
+│   ├── package.json
+│   └── Dockerfile
+├── bank-angular-app/            # Frontend Angular
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── components/
+│   │   │   ├── services/
+│   │   │   └── models/
+│   │   └── environments/
+│   ├── package.json
+│   └── Dockerfile
 ├── BankAPI.Tests/               # Proyecto de pruebas
 │   └── MovimientoServiceTests.cs
 ├── docker-compose.yml           # Orquestación Docker
@@ -460,6 +523,8 @@ ConnectionStrings__DefaultConnection="Server=sqlserver;Database=BankDb;User Id=s
 
 ### ✅ Código Fuente
 - [x] Proyecto .NET Core completo
+- [x] Frontend React funcional
+- [x] Frontend Angular funcional
 - [x] Patrones Repository y Service implementados
 - [x] DTOs con validaciones
 - [x] Controladores REST
@@ -477,7 +542,9 @@ ConnectionStrings__DefaultConnection="Server=sqlserver;Database=BankDb;User Id=s
 - [x] Pruebas de validación de negocio
 
 ### ✅ Docker
-- [x] Dockerfile optimizado
+- [x] Dockerfile para API
+- [x] Dockerfile para React
+- [x] Dockerfile para Angular
 - [x] docker-compose.yml funcional
 - [x] Migraciones automáticas
 - [x] SQL Server containerizado
@@ -511,8 +578,8 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 ## 👨‍💻 Autor
 
 **Rodrigo Vega**
-- GitHub: [@tu-usuario](https://github.com/rvegah)
-- LinkedIn: [Tu Perfil](https://www.linkedin.com/in/rodrigo-vega-heredia/)
+- GitHub: [@rvegah](https://github.com/rvegah)
+- LinkedIn: [Rodrigo Vega Heredia](https://www.linkedin.com/in/rodrigo-vega-heredia/)
 - Email: rodrigovegaheredia@gmail.com
 
 ---
@@ -521,10 +588,11 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 Este proyecto demuestra:
 - ✅ Dominio de .NET Core y Entity Framework
+- ✅ Desarrollo Frontend con React y Angular
 - ✅ Implementación de patrones de diseño
 - ✅ Validaciones de negocio complejas
 - ✅ Arquitectura escalable y mantenible
 - ✅ Despliegue con Docker
 - ✅ Pruebas unitarias y documentación
 
-**Desarrollado como parte del ejercicio técnico Full-Stack para demostrar competencias en desarrollo backend, arquitectura de software y DevOps.**
+**Desarrollado como parte del ejercicio técnico Full-Stack para demostrar competencias en desarrollo backend, frontend, arquitectura de software y DevOps.**

@@ -1,0 +1,64 @@
+<div class="main-layout">
+  <app-header></app-header>
+  
+  <div class="content-wrapper">
+    <app-sidebar></app-sidebar>
+    
+    <main class="main-content">
+      <div class="content-header">
+        <div class="breadcrumb">
+          <span class="breadcrumb-item">🏠 Inicio</span>
+          <span class="breadcrumb-separator">></span>
+          <span class="breadcrumb-item active">Dashboard</span>
+        </div>
+        
+        <div class="content-actions">
+          <button class="btn-action" title="Actualizar">
+            <i class="action-icon">🔄</i>
+          </button>
+          <button class="btn-action" title="Configuración">
+            <i class="action-icon">⚙️</i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="content-body">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+  
+  <app-footer></app-footer>
+</div>
+
+<!-- Loading Spinner Global -->
+<div class="loading-overlay" *ngIf="isLoading$ | async">
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p class="loading-text">Cargando...</p>
+  </div>
+</div>
+
+<!-- Notification Container -->
+<div class="notification-container">
+  <div 
+    class="notification" 
+    *ngFor="let notification of notifications$ | async"
+    [ngClass]="'notification-' + notification.type"
+    [@slideIn]
+  >
+    <div class="notification-icon">
+      <span *ngIf="notification.type === 'success'">✅</span>
+      <span *ngIf="notification.type === 'error'">❌</span>
+      <span *ngIf="notification.type === 'warning'">⚠️</span>
+      <span *ngIf="notification.type === 'info'">ℹ️</span>
+    </div>
+    <div class="notification-content">
+      <h4 class="notification-title">{{notification.title}}</h4>
+      <p class="notification-message">{{notification.message}}</p>
+    </div>
+    <button class="notification-close" (click)="closeNotification(notification.id)">
+      ✕
+    </button>
+  </div>
+</div>

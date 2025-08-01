@@ -1,0 +1,19 @@
+/* Reset básico para la aplicación */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+  line-height: 1.6;
+}
+
+/* Estilos globales para la aplicación */
+:host {
+  display: block;
+  min-height: 100vh;
+}

@@ -1,0 +1,243 @@
+<div class="account-list-container">
+  <!-- Header -->
+  <div class="list-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="title-icon">💳</i>
+        Gestión de Cuentas
+      </h1>
+      <p class="page-subtitle">Administra todas las cuentas bancarias del sistema</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" routerLink="/accounts/new">
+        <i class="btn-icon">➕</i>
+        Nueva Cuenta
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="search-container">
+      <div class="search-input-wrapper">
+        <i class="search-icon">🔍</i>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Buscar por número de cuenta o cliente..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+        >
+        <button class="clear-search" *ngIf="searchTerm" (click)="clearSearch()">✕</button>
+      </div>
+    </div>
+
+    <div class="filters-container">
+      <div class="filter-group">
+        <label class="filter-label">Tipo:</label>
+        <select class="filter-select" [(ngModel)]="typeFilter" (change)="onFilterChange()">
+          <option value="">Todos</option>
+          <option value="Ahorro">Ahorro</option>
+          <option value="Corriente">Corriente</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Estado:</label>
+        <select class="filter-select" [(ngModel)]="statusFilter" (change)="onFilterChange()">
+          <option value="">Todos</option>
+          <option value="true">Activa</option>
+          <option value="false">Inactiva</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Cliente:</label>
+        <select class="filter-select" [(ngModel)]="clientFilter" (change)="onFilterChange()">
+          <option value="">Todos</option>
+          <option *ngFor="let client of clients" [value]="client.clienteId">
+            {{client.nombre}}
+          </option>
+        </select>
+      </div>
+
+      <button class="btn btn-secondary" (click)="resetFilters()">
+        <i class="btn-icon">🔄</i>
+        Limpiar Filtros
+      </button>
+    </div>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="stats-row">
+    <div class="stat-item">
+      <span class="stat-number">{{totalAccounts}}</span>
+      <span class="stat-label">Total Cuentas</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">{{activeAccounts}}</span>
+      <span class="stat-label">Activas</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">${{totalBalance | number:'1.2-2'}}</span>
+      <span class="stat-label">Balance Total</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-number">{{filteredAccounts.length}}</span>
+      <span class="stat-label">Mostrando</span>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Cargando cuentas...</p>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!loading && filteredAccounts.length === 0">
+    <div class="empty-icon">💳</div>
+    <h3>No se encontraron cuentas</h3>
+    <p *ngIf="searchTerm || statusFilter || typeFilter || clientFilter">
+      Intenta ajustar los filtros de búsqueda
+    </p>
+    <button class="btn btn-primary" routerLink="/accounts/new">
+      Crear Primera Cuenta
+    </button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-container" *ngIf="!loading && filteredAccounts.length > 0">
+    <div class="table-wrapper">
+      <table class="accounts-table">
+        <thead>
+          <tr>
+            <th class="sortable" (click)="sort('numeroCuenta')">
+              Número Cuenta
+              <i class="sort-icon" [ngClass]="getSortClass('numeroCuenta')">⬍</i>
+            </th>
+            <th>Cliente</th>
+            <th class="sortable" (click)="sort('tipoCuenta')">
+              Tipo
+              <i class="sort-icon" [ngClass]="getSortClass('tipoCuenta')">⬍</i>
+            </th>
+            <th class="sortable" (click)="sort('saldoInicial')">
+              Saldo Inicial
+              <i class="sort-icon" [ngClass]="getSortClass('saldoInicial')">⬍</i>
+            </th>
+            <th>Estado</th>
+            <th class="actions-header">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let account of paginatedAccounts; trackBy: trackByAccountId" class="account-row">
+            <td class="account-number">
+              <div class="account-cell">
+                <div class="account-icon" [ngClass]="'icon-' + account.tipoCuenta.toLowerCase()">
+                  {{account.tipoCuenta === 'Ahorro' ? '🏦' : '💼'}}
+                </div>
+                <div class="account-info">
+                  <span class="number">{{account.numeroCuenta}}</span>
+                  <span class="type-small">{{account.tipoCuenta}}</span>
+                </div>
+              </div>
+            </td>
+            <td class="client-info">
+              <div class="client-cell">
+                <div class="avatar">{{getInitials(getClientName(account.clienteId))}}</div>
+                  <div class="client-details">
+                    <span class="client-name">{{getClientName(account.clienteId)}}</span>
+                    <span class="client-id">Cliente ID: {{account.clienteId}}</span>
+                  </div>
+              </div>
+            </td>
+            <td>
+              <span class="type-badge" [ngClass]="'type-' + account.tipoCuenta.toLowerCase()">
+                {{account.tipoCuenta}}
+              </span>
+            </td>
+            <td class="balance">
+              <span class="currency">${{account.saldoInicial | number:'1.2-2'}}</span>
+            </td>
+            <td>
+              <span class="status-badge" [ngClass]="account.estado ? 'status-active' : 'status-inactive'">
+                {{account.estado ? 'Activa' : 'Inactiva'}}
+              </span>
+            </td>
+            <td class="actions-cell">
+              <div class="action-buttons">
+                <button class="btn-action btn-view" [routerLink]="['/accounts/detail', account.cuentaId]" title="Ver detalles">
+                  👁️
+                </button>
+                <button class="btn-action btn-edit" [routerLink]="['/accounts/edit', account.cuentaId]" title="Editar cuenta">
+                  ✏️
+                </button>
+                <button class="btn-action btn-movements" [routerLink]="['/movements']" [queryParams]="{accountId: account.cuentaId}" title="Ver movimientos">
+                  💰
+                </button>
+                <button class="btn-action btn-delete" (click)="confirmDelete(account)" title="Eliminar cuenta">
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    <div class="pagination-container">
+      <div class="pagination-info">
+        Mostrando {{startItem}} - {{endItem}} de {{filteredAccounts.length}} cuentas
+      </div>
+      
+      <div class="pagination-controls">
+        <div class="page-size-selector">
+          <label>Mostrar:</label>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+          <span>por página</span>
+        </div>
+
+        <div class="page-navigation">
+          <button class="btn btn-sm" [disabled]="currentPage === 1" (click)="goToPage(1)">⏮️</button>
+          <button class="btn btn-sm" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">◀️</button>
+          
+          <div class="page-numbers">
+            <button *ngFor="let page of getVisiblePages()" class="btn btn-sm" [ngClass]="{'active': page === currentPage}" (click)="goToPage(page)">
+              {{page}}
+            </button>
+          </div>
+          
+          <button class="btn btn-sm" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">▶️</button>
+          <button class="btn btn-sm" [disabled]="currentPage === totalPages" (click)="goToPage(totalPages)">⏭️</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="cancelDelete()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Confirmar eliminación</h3>
+      <button class="modal-close" (click)="cancelDelete()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>¿Estás seguro de que deseas eliminar la cuenta:</p>
+      <strong>{{accountToDelete?.numeroCuenta}}</strong>
+      <p class="warning-text">Esta acción no se puede deshacer y eliminará todos los movimientos asociados.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="cancelDelete()">Cancelar</button>
+      <button class="btn btn-danger" (click)="deleteAccount()" [disabled]="deleting">
+        {{deleting ? 'Eliminando...' : 'Eliminar'}}
+      </button>
+    </div>
+  </div>
+</div>

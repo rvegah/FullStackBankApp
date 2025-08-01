@@ -1,0 +1,292 @@
+<div class="report-generator-container">
+  <!-- Header -->
+  <div class="report-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="title-icon">📊</i>
+        Generador de Reportes
+      </h1>
+      <p class="page-subtitle">Genera reportes detallados del estado de cuentas y movimientos</p>
+    </div>
+  </div>
+
+  <!-- Form Section -->
+  <div class="form-section">
+    <form [formGroup]="reportForm" (ngSubmit)="generateReport()" class="report-form">
+      <div class="form-grid">
+        <!-- Cliente Selection -->
+        <div class="form-group">
+          <label class="form-label">Cliente</label>
+          <select formControlName="clienteId" class="form-control">
+            <option value="">Seleccionar cliente</option>
+            <option *ngFor="let client of clients" [value]="client.clienteId">
+              {{client.nombre}} - {{client.identificacion}}
+            </option>
+          </select>
+        </div>
+
+        <!-- Fecha Inicio -->
+        <div class="form-group">
+          <label class="form-label">Fecha Inicio</label>
+          <input 
+            type="date" 
+            formControlName="fechaInicio" 
+            class="form-control"
+            [max]="today"
+          >
+        </div>
+
+        <!-- Fecha Fin -->
+        <div class="form-group">
+          <label class="form-label">Fecha Fin</label>
+          <input 
+            type="date" 
+            formControlName="fechaFin" 
+            class="form-control"
+            [max]="today"
+          >
+        </div>
+
+        <!-- Tipo de Reporte -->
+        <div class="form-group">
+          <label class="form-label">Tipo de Reporte</label>
+          <select formControlName="tipoReporte" class="form-control">
+            <option value="completo">Estado de Cuenta Completo</option>
+            <option value="movimientos">Solo Movimientos</option>
+            <option value="resumen">Resumen Ejecutivo</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="form-actions">
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          (click)="resetForm()"
+          [disabled]="generating"
+        >
+          <i class="btn-icon">🔄</i>
+          Limpiar
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-info" 
+          (click)="previewReport()"
+          [disabled]="reportForm.invalid || generating"
+        >
+          <i class="btn-icon">👁️</i>
+          Vista Previa
+        </button>
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="reportForm.invalid || generating"
+        >
+          <i class="btn-icon">📄</i>
+          {{generating ? 'Generando...' : 'Generar PDF'}}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-section" *ngIf="generating">
+    <div class="loading-card">
+      <div class="spinner"></div>
+      <h3>Generando Reporte</h3>
+      <p>Por favor espere mientras procesamos la información...</p>
+      <div class="progress-bar">
+        <div class="progress-fill" [style.width.%]="progressPercentage"></div>
+      </div>
+      <span class="progress-text">{{progressPercentage}}%</span>
+    </div>
+  </div>
+
+  <!-- Report Preview -->
+  <div class="preview-section" *ngIf="reportData && !generating">
+    <div class="preview-header">
+      <h2 class="preview-title">Vista Previa del Reporte</h2>
+      <div class="preview-actions">
+        <button class="btn btn-success" (click)="exportToPDF()">
+          <i class="btn-icon">📥</i>
+          Descargar PDF
+        </button>
+        <button class="btn btn-warning" (click)="exportToJSON()">
+          <i class="btn-icon">📋</i>
+          Exportar JSON
+        </button>
+      </div>
+    </div>
+
+    <!-- Report Content -->
+    <div class="report-content">
+      <!-- Client Info -->
+      <div class="report-section">
+        <h3 class="section-title">Información del Cliente</h3>
+        <div class="client-info-card">
+          <div class="client-avatar">{{getInitials(selectedClient?.nombre || '')}}</div>
+          <div class="client-details">
+            <h4>{{selectedClient?.nombre}}</h4>
+            <p><strong>Cédula:</strong> {{selectedClient?.identificacion}}</p>
+            <p><strong>Dirección:</strong> {{selectedClient?.direccion}}</p>
+            <p><strong>Teléfono:</strong> {{selectedClient?.telefono}}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Period Info -->
+      <div class="report-section">
+        <h3 class="section-title">Período del Reporte</h3>
+        <div class="period-info">
+          <span class="period-item">
+            <strong>Desde:</strong> {{reportForm.get('fechaInicio')?.value | date:'dd/MM/yyyy'}}
+          </span>
+          <span class="period-item">
+            <strong>Hasta:</strong> {{reportForm.get('fechaFin')?.value | date:'dd/MM/yyyy'}}
+          </span>
+          <span class="period-item">
+            <strong>Días:</strong> {{getDaysDifference()}}
+          </span>
+        </div>
+      </div>
+
+      <!-- Statistics Summary -->
+      <div class="report-section">
+        <h3 class="section-title">Resumen Estadístico</h3>
+        <div class="stats-grid">
+          <div class="stat-card credit">
+            <div class="stat-icon">⬆️</div>
+            <div class="stat-content">
+              <span class="stat-value">+${{reportData.totalCredits | number:'1.2-2'}}</span>
+              <span class="stat-label">Total Créditos</span>
+              <span class="stat-count">{{reportData.creditCount}} transacciones</span>
+            </div>
+          </div>
+          <div class="stat-card debit">
+            <div class="stat-icon">⬇️</div>
+            <div class="stat-content">
+              <span class="stat-value">-${{reportData.totalDebits | number:'1.2-2'}}</span>
+              <span class="stat-label">Total Débitos</span>
+              <span class="stat-count">{{reportData.debitCount}} transacciones</span>
+            </div>
+          </div>
+          <div class="stat-card balance">
+            <div class="stat-icon">💰</div>
+            <div class="stat-content">
+              <span class="stat-value">${{reportData.netBalance | number:'1.2-2'}}</span>
+              <span class="stat-label">Balance Neto</span>
+              <span class="stat-count">{{reportData.totalMovements}} movimientos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accounts Summary -->
+      <div class="report-section">
+        <h3 class="section-title">Cuentas del Cliente</h3>
+        <div class="accounts-summary">
+          <div *ngFor="let account of reportData.accounts" class="account-card">
+            <div class="account-header">
+              <div class="account-icon" [ngClass]="account.tipoCuenta === 'Ahorro' ? 'savings' : 'current'">
+                {{account.tipoCuenta === 'Ahorro' ? '🏦' : '💳'}}
+              </div>
+              <div class="account-info">
+                <h4>{{account.numeroCuenta}}</h4>
+                <span class="account-type">{{account.tipoCuenta}}</span>
+              </div>
+              <div class="account-balance">
+                <span class="balance-amount">${{account.saldoActual | number:'1.2-2'}}</span>
+                <span class="balance-label">Saldo Actual</span>
+              </div>
+            </div>
+            <div class="account-stats">
+              <div class="account-stat">
+                <span class="stat-number">{{account.movimientosEnPeriodo}}</span>
+                <span class="stat-text">Movimientos</span>
+              </div>
+              <div class="account-stat credit">
+                <span class="stat-number">+${{account.creditosEnPeriodo | number:'1.2-2'}}</span>
+                <span class="stat-text">Créditos</span>
+              </div>
+              <div class="account-stat debit">
+                <span class="stat-number">-${{account.debitosEnPeriodo | number:'1.2-2'}}</span>
+                <span class="stat-text">Débitos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Movements Detail -->
+      <div class="report-section" *ngIf="reportData.movements.length > 0">
+        <h3 class="section-title">Detalle de Movimientos</h3>
+        <div class="movements-table-container">
+          <table class="movements-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Cuenta</th>
+                <th>Tipo</th>
+                <th>Valor</th>
+                <th>Saldo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let movement of reportData.movements" 
+                  [ngClass]="movement.tipoMovimiento === 'Crédito' ? 'credit-row' : 'debit-row'">
+                <td>{{movement.fecha | date:'dd/MM/yyyy HH:mm'}}</td>
+                <td>{{getAccountNumber(movement.cuentaId)}}</td>
+                <td>
+                  <span class="movement-badge" [ngClass]="movement.tipoMovimiento === 'Crédito' ? 'badge-credit' : 'badge-debit'">
+                    {{movement.tipoMovimiento}}
+                  </span>
+                </td>
+                <td class="value-cell" [ngClass]="movement.tipoMovimiento === 'Crédito' ? 'value-credit' : 'value-debit'">
+                  {{movement.tipoMovimiento === 'Crédito' ? '+' : '-'}}${{Math.abs(movement.valor) | number:'1.2-2'}}
+                </td>
+                <td class="balance-cell">${{movement.saldo | number:'1.2-2'}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Empty Movements -->
+      <div class="report-section" *ngIf="reportData.movements.length === 0">
+        <div class="no-movements">
+          <div class="no-movements-icon">📈</div>
+          <h3>Sin movimientos en el período</h3>
+          <p>No se encontraron transacciones para el cliente y período seleccionados.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Reports -->
+  <div class="quick-reports-section">
+    <h2 class="section-title">Reportes Rápidos</h2>
+    <div class="quick-reports-grid">
+      <button class="quick-report-btn" (click)="generateQuickReport('daily')">
+        <i class="report-icon">📅</i>
+        <span class="report-title">Reporte Diario</span>
+        <span class="report-desc">Movimientos de hoy</span>
+      </button>
+      <button class="quick-report-btn" (click)="generateQuickReport('weekly')">
+        <i class="report-icon">📊</i>
+        <span class="report-title">Reporte Semanal</span>
+        <span class="report-desc">Últimos 7 días</span>
+      </button>
+      <button class="quick-report-btn" (click)="generateQuickReport('monthly')">
+        <i class="report-icon">📈</i>
+        <span class="report-title">Reporte Mensual</span>
+        <span class="report-desc">Mes actual</span>
+      </button>
+      <button class="quick-report-btn" (click)="generateQuickReport('all')">
+        <i class="report-icon">📋</i>
+        <span class="report-title">Reporte Completo</span>
+        <span class="report-desc">Todos los datos</span>
+      </button>
+    </div>
+  </div>
+</div>

@@ -6,13 +6,15 @@ using BankAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// CORS - Una sola configuración para ambas apps
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp", builder =>
+    options.AddPolicy("AllowFrontendApps", builder =>
     {
-        builder.WithOrigins("http://localhost:3000")
+        builder.WithOrigins("http://localhost:3000", "http://localhost:4200")
                .AllowAnyHeader()
-               .AllowAnyMethod();
+               .AllowAnyMethod()
+               .AllowCredentials();
     });
 });
 
@@ -46,9 +48,6 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Habilitar CORS
-app.UseCors("AllowReactApp");
-
 // Apply migrations automatically on startup (for Docker)
 using (var scope = app.Services.CreateScope())
 {
@@ -73,6 +72,9 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "BankAPI v1");
     });
 }
+
+// IMPORTANTE: CORS debe ir ANTES de UseHttpsRedirection
+app.UseCors("AllowFrontendApps");
 
 app.UseHttpsRedirection();
 

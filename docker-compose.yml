@@ -32,6 +32,36 @@ services:
       - bankapi-network
     restart: unless-stopped
 
+  # Frontend React
+  bank-frontend:
+    build:
+      context: ./bank-frontend
+      dockerfile: Dockerfile
+    container_name: bankapi-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - bankapi
+    networks:
+      - bankapi-network
+    stdin_open: true
+    tty: true
+
+  # Frontend Angular
+  bank-angular-app:
+    build:
+      context: ./bank-angular-app
+      dockerfile: Dockerfile
+    container_name: bankapi-angular
+    ports:
+      - "4200:4200"
+    depends_on:
+      - bankapi
+    networks:
+      - bankapi-network
+    stdin_open: true
+    tty: true
+
 volumes:
   sqlserver_data:
 

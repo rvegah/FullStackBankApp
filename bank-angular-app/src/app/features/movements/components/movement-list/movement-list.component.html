@@ -1,0 +1,307 @@
+<div class="movement-list-container">
+  <!-- Header con título y acciones -->
+  <div class="list-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="title-icon">💳</i>
+        Gestión de Movimientos
+      </h1>
+      <p class="page-subtitle">Administra todas las transacciones del sistema bancario</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" routerLink="/movements/new">
+        <i class="btn-icon">➕</i>
+        Nuevo Movimiento
+      </button>
+    </div>
+  </div>
+
+  <!-- Filtros y búsqueda -->
+  <div class="filters-section">
+    <div class="search-container">
+      <div class="search-input-wrapper">
+        <i class="search-icon">🔍</i>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Buscar por cuenta, cliente o valor..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+        >
+        <button
+          class="clear-search"
+          *ngIf="searchTerm"
+          (click)="clearSearch()"
+          title="Limpiar búsqueda"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+    <div class="filters-container">
+      <div class="filter-group">
+        <label class="filter-label">Tipo:</label>
+        <select
+          class="filter-select"
+          [(ngModel)]="typeFilter"
+          (change)="onFilterChange()"
+        >
+          <option value="">Todos</option>
+          <option value="Crédito">Crédito</option>
+          <option value="Débito">Débito</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Cuenta:</label>
+        <select
+          class="filter-select"
+          [(ngModel)]="accountFilter"
+          (change)="onFilterChange()"
+        >
+          <option value="">Todas</option>
+          <option *ngFor="let account of accounts" [value]="account.cuentaId">
+            {{account.numeroCuenta}} - {{getClientName(account.clienteId)}}
+          </option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Fecha:</label>
+        <input
+          type="date"
+          class="filter-input"
+          [(ngModel)]="dateFilter"
+          (change)="onFilterChange()"
+        >
+      </div>
+      <button class="btn btn-secondary" (click)="resetFilters()">
+        <i class="btn-icon">🔄</i>
+        Limpiar Filtros
+      </button>
+    </div>
+  </div>
+
+  <!-- Estadísticas rápidas -->
+  <div class="stats-row">
+    <div class="stat-item credit">
+      <span class="stat-number">+${{totalCredits | number:'1.2-2'}}</span>
+      <span class="stat-label">Total Créditos</span>
+    </div>
+    <div class="stat-item debit">
+      <span class="stat-number">-${{totalDebits | number:'1.2-2'}}</span>
+      <span class="stat-label">Total Débitos</span>
+    </div>
+    <div class="stat-item balance">
+      <span class="stat-number">${{netBalance | number:'1.2-2'}}</span>
+      <span class="stat-label">Balance Neto</span>
+    </div>
+    <div class="stat-item count">
+      <span class="stat-number">{{filteredMovements.length}}</span>
+      <span class="stat-label">Mostrando</span>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Cargando movimientos...</p>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!loading && filteredMovements.length === 0">
+    <div class="empty-icon">📊</div>
+    <h3>No se encontraron movimientos</h3>
+    <p *ngIf="searchTerm || typeFilter || accountFilter || dateFilter">
+      Intenta ajustar los filtros de búsqueda
+    </p>
+    <p *ngIf="!searchTerm && !typeFilter && !accountFilter && !dateFilter">
+      Comienza realizando el primer movimiento
+    </p>
+    <button class="btn btn-primary" routerLink="/movements/new">
+      Crear Primer Movimiento
+    </button>
+  </div>
+
+  <!-- Tabla de movimientos -->
+  <div class="table-container" *ngIf="!loading && filteredMovements.length > 0">
+    <div class="table-wrapper">
+      <table class="movements-table">
+        <thead>
+          <tr>
+            <th class="sortable" (click)="sort('fecha')">
+              Fecha
+              <i class="sort-icon" [ngClass]="getSortClass('fecha')">⬍</i>
+            </th>
+            <th>Cuenta</th>
+            <th>Cliente</th>
+            <th class="sortable" (click)="sort('tipoMovimiento')">
+              Tipo
+              <i class="sort-icon" [ngClass]="getSortClass('tipoMovimiento')">⬍</i>
+            </th>
+            <th class="sortable" (click)="sort('valor')">
+              Valor
+              <i class="sort-icon" [ngClass]="getSortClass('valor')">⬍</i>
+            </th>
+            <th class="sortable" (click)="sort('saldo')">
+              Saldo
+              <i class="sort-icon" [ngClass]="getSortClass('saldo')">⬍</i>
+            </th>
+            <th class="actions-header">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let movement of paginatedMovements; trackBy: trackByMovementId" class="movement-row">
+            <td class="date-cell">
+              <div class="date-info">
+                <span class="date">{{movement.fecha | date:'dd/MM/yyyy'}}</span>
+                <span class="time">{{movement.fecha | date:'HH:mm'}}</span>
+              </div>
+            </td>
+            <td class="account-cell">
+              <div class="account-info">
+                <div class="account-icon" [ngClass]="getAccountTypeClass(getAccountInfo(movement.cuentaId)?.tipoCuenta)">
+                  {{getAccountInfo(movement.cuentaId)?.tipoCuenta === 'Ahorro' ? '🏦' : '💳'}}
+                </div>
+                <div class="account-details">
+                  <span class="account-number">{{getAccountInfo(movement.cuentaId)?.numeroCuenta}}</span>
+                  <span class="account-type">{{getAccountInfo(movement.cuentaId)?.tipoCuenta}}</span>
+                </div>
+              </div>
+            </td>
+            <td class="client-cell">
+              <div class="client-info">
+                <div class="avatar">{{getInitials(getClientNameByAccountId(movement.cuentaId))}}</div>
+                <span class="client-name">{{getClientNameByAccountId(movement.cuentaId)}}</span>
+              </div>
+            </td>
+            <td>
+              <span class="movement-type" [ngClass]="movement.tipoMovimiento === 'Crédito' ? 'type-credit' : 'type-debit'">
+                <i class="type-icon">{{movement.tipoMovimiento === 'Crédito' ? '⬆️' : '⬇️'}}</i>
+                {{movement.tipoMovimiento}}
+              </span>
+            </td>
+            <td class="value-cell">
+              <span class="movement-value" [ngClass]="movement.tipoMovimiento === 'Crédito' ? 'value-credit' : 'value-debit'">
+                {{movement.tipoMovimiento === 'Crédito' ? '+' : '-'}}${{Math.abs(movement.valor) | number:'1.2-2'}}
+              </span>
+            </td>
+            <td class="balance-cell">
+              <span class="balance-amount">${{movement.saldo | number:'1.2-2'}}</span>
+            </td>
+            <td class="actions-cell">
+              <div class="action-buttons">
+                <button
+                  class="btn-action btn-view"
+                  [routerLink]="['/movements/detail', movement.movimientoId]"
+                  title="Ver detalles"
+                >
+                  👁️
+                </button>
+                <button
+                  class="btn-action btn-edit"
+                  [routerLink]="['/movements/edit', movement.movimientoId]"
+                  title="Editar movimiento"
+                >
+                  ✏️
+                </button>
+                <button
+                  class="btn-action btn-delete"
+                  (click)="confirmDelete(movement)"
+                  title="Eliminar movimiento"
+                >
+                  🗑️
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    <div class="pagination-container">
+      <div class="pagination-info">
+        Mostrando {{startItem}} - {{endItem}} de {{filteredMovements.length}} movimientos
+      </div>
+      <div class="pagination-controls">
+        <div class="page-size-selector">
+          <label>Mostrar:</label>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+          <span>por página</span>
+        </div>
+        <div class="page-navigation">
+          <button
+            class="btn btn-sm"
+            [disabled]="currentPage === 1"
+            (click)="goToPage(1)"
+          >
+            ⏮️
+          </button>
+          <button
+            class="btn btn-sm"
+            [disabled]="currentPage === 1"
+            (click)="goToPage(currentPage - 1)"
+          >
+            ⬅️
+          </button>
+          <div class="page-numbers">
+            <button
+              *ngFor="let page of getVisiblePages()"
+              class="btn btn-sm"
+              [ngClass]="{'active': page === currentPage}"
+              (click)="goToPage(page)"
+            >
+              {{page}}
+            </button>
+          </div>
+          <button
+            class="btn btn-sm"
+            [disabled]="currentPage === totalPages"
+            (click)="goToPage(currentPage + 1)"
+          >
+            ➡️
+          </button>
+          <button
+            class="btn btn-sm"
+            [disabled]="currentPage === totalPages"
+            (click)="goToPage(totalPages)"
+          >
+            ⏭️
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div class="modal-overlay" *ngIf="showDeleteModal" (click)="cancelDelete()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Confirmar eliminación</h3>
+      <button class="modal-close" (click)="cancelDelete()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>¿Estás seguro de que deseas eliminar este movimiento?</p>
+      <div class="movement-details" *ngIf="movementToDelete">
+        <strong>{{movementToDelete.tipoMovimiento}}</strong> de 
+        <strong>${{Math.abs(movementToDelete.valor) | number:'1.2-2'}}</strong>
+        <br>
+        Cuenta: <strong>{{getAccountInfo(movementToDelete.cuentaId)?.numeroCuenta}}</strong>
+      </div>
+      <p class="warning-text">Esta acción no se puede deshacer.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="cancelDelete()">
+        Cancelar
+      </button>
+      <button class="btn btn-danger" (click)="deleteMovement()" [disabled]="deleting">
+        {{deleting ? 'Eliminando...' : 'Eliminar'}}
+      </button>
+    </div>
+  </div>
+</div>
